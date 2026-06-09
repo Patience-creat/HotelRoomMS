@@ -1,6 +1,8 @@
 {
   // 指定Java源代码的根目录（你的源码都放在src下，和学生项目一致）
-  "java.project.sourcePaths": ["src"],
+  "java.project.sourcePaths": [
+    "src"
+  ],
   // 指定编译后的.class文件输出路径（会自动在target下生成class文件夹）
   "java.project.outputPath": "target/class",
   // 让VS Code识别lib文件夹下所有的.jar依赖包（包括MySQL驱动）

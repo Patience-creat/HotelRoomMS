@@ -1,0 +1,15 @@
+# Compiled class files
+*.class
+
+# Target directory
+target/
+
+# IDE settings
+.vscode/
+
+# Library files
+lib/
+
+# OS files
+Thumbs.db
+.DS_Store

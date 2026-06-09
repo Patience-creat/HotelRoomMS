@@ -1,5 +1,8 @@
 
 import hotel.dao.RoomManArray;
+import hotel.dao.RoomManList;
+import hotel.dao.RoomManMap;
+import hotel.dao.RoomManMySQL;
 import hotel.entity.Room;
 import hotel.service.RoomService;
 import java.util.List;
@@ -8,7 +11,46 @@ import java.util.Scanner;
 public class TestHotel {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        RoomService roomService = new RoomService(new RoomManArray());
+
+        // ===== 启动时选择存储方式 =====
+        System.out.println("=================================");
+        System.out.println("  请选择数据存储方式：");
+        System.out.println("  1. Array（数组）");
+        System.out.println("  2. List（列表）");
+        System.out.println("  3. Map（映射）");
+        System.out.println("  4. MySQL（数据库）");
+        System.out.println("=================================");
+        System.out.print("请输入编号（1-4，默认1）：");
+
+        int storageChoice = 1; // 默认 Array
+        try {
+            storageChoice = Integer.parseInt(sc.nextLine());
+            if (storageChoice < 1 || storageChoice > 4) {
+                storageChoice = 1;
+                System.out.println("输入无效，使用默认：Array");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("输入无效，使用默认：Array");
+        }
+
+        RoomService roomService;
+        switch (storageChoice) {
+            case 2:
+                roomService = new RoomService(new RoomManList());
+                System.out.println(">> 已选择 List 存储方式");
+                break;
+            case 3:
+                roomService = new RoomService(new RoomManMap());
+                System.out.println(">> 已选择 Map 存储方式");
+                break;
+            case 4:
+                roomService = new RoomService(new RoomManMySQL());
+                System.out.println(">> 已选择 MySQL 存储方式");
+                break;
+            default:
+                roomService = new RoomService(new RoomManArray());
+                System.out.println(">> 已选择 Array 存储方式");
+        }
 
         while (true) {
             System.out.println("\n====== 酒店客房管理系统======");

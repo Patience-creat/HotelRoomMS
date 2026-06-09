@@ -5,49 +5,35 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RoomManArray implements IRoomMan {
-    private static final int MAX = 100;
-    private int count = 0;
-    private Room[] rooms = new Room[MAX];
-public RoomManArray() {
+public class RoomManList implements IRoomMan {
+    private List<Room> roomList = new ArrayList<>();
+
+    public RoomManList() {
         // 构造器可以预加载一些房间数据
-        rooms[count++] = new Room("101", 1, 0);
-        rooms[count++] = new Room("102", 1, 1);
-        rooms[count++] = new Room("201", 2, 0);
+        roomList.add(new Room("101", 1, 0));
+        roomList.add(new Room("102", 1, 1));
+        roomList.add(new Room("201", 2, 0));
     }
+
     @Override
     public boolean addRoom(Room room) {
-        if (count >= MAX) {
-            System.out.println(" 添加失败：房间数量已达上限！");
-            return false;
-        }
         if (queryRoomByNo(room.getRoomNo()) != null) {
             System.out.println(" 添加失败：房号已存在！");
             return false;
         }
-        rooms[count++] = room;
+        roomList.add(room);
         System.out.println(" 添加成功！");
         return true;
     }
 
     @Override
     public boolean deleteRoom(String roomNo) {
-        int index = -1;
-        for (int i = 0; i < count; i++) {
-            if (rooms[i].getRoomNo().equals(roomNo)) {
-                index = i;
-                break;
-            }
-        }
-        if (index == -1) {
+        Room r = queryRoomByNo(roomNo);
+        if (r == null) {
             System.out.println(" 删除失败：房号不存在！");
             return false;
         }
-        // 数组前移覆盖
-        for (int i = index; i < count - 1; i++) {
-            rooms[i] = rooms[i + 1];
-        }
-        rooms[--count] = null;
+        roomList.remove(r);
         System.out.println(" 删除成功！");
         return true;
     }
@@ -67,9 +53,9 @@ public RoomManArray() {
 
     @Override
     public Room queryRoomByNo(String roomNo) {
-        for (int i = 0; i < count; i++) {
-            if (rooms[i].getRoomNo().equals(roomNo)) {
-                return rooms[i];
+        for (Room r : roomList) {
+            if (r.getRoomNo().equals(roomNo)) {
+                return r;
             }
         }
         return null;
@@ -77,20 +63,13 @@ public RoomManArray() {
 
     @Override
     public List<Room> queryAllRooms() {
-        List<Room> list = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            list.add(rooms[i]);
-        }
-        return list;
+        return new ArrayList<>(roomList);
     }
 
-    // 文本方式保存到文件（不用序列化）
     @Override
     public void roomsToFile() {
         try (PrintWriter pw = new PrintWriter(new FileWriter("rooms.txt"))) {
-            for (int i = 0; i < count; i++) {
-                Room r = rooms[i];
-                // 格式：房间号-楼层-状态
+            for (Room r : roomList) {
                 pw.println(r.getRoomNo() + "-" + r.getFloor() + "-" + r.getRoomStatus());
             }
             System.out.println(" 数据已保存到 rooms.txt");
@@ -99,24 +78,23 @@ public RoomManArray() {
         }
     }
 
-    // 从文本文件读取（不用序列化）
     @Override
     public void roomsFromFile() {
         File file = new File("rooms.txt");
         if (!file.exists()) {
-            System.out.println("!  数据文件不存在，跳过读取");
+            System.out.println("! 数据文件不存在，跳过读取");
             return;
         }
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
-            count = 0;
+            roomList.clear();
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split("-");
                 if (parts.length == 3) {
                     String roomNo = parts[0];
                     int floor = Integer.parseInt(parts[1]);
                     int status = Integer.parseInt(parts[2]);
-                    rooms[count++] = new Room(roomNo, floor, status);
+                    roomList.add(new Room(roomNo, floor, status));
                 }
             }
             System.out.println(" 已从 rooms.txt 读取数据");
