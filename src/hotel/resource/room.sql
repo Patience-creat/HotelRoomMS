@@ -7,6 +7,9 @@
 --   status    : 0-空闲 1-入住 2-打扫 3-维修
 -- ============================================================
 
+CREATE DATABASE ke;
+USE ke;
+
 CREATE TABLE IF NOT EXISTS `room` (
     `id`       INT         NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '自增主键',
     `room_no`  VARCHAR(10) NOT NULL                           COMMENT '房间号',

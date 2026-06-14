@@ -1,6 +1,7 @@
 package hotel.dao;
 
 import hotel.entity.Room;
+import hotel.util.DBUtil;
 import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
@@ -8,25 +9,14 @@ import java.util.List;
 
 public class RoomManMySQL implements IRoomMan {
 
-    private static final String URL = "jdbc:mysql://localhost:3306/ke?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true";
-    private static final String USER = "root";
-    private static final String PASSWORD = "123456";
-
-    static {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            System.out.println("! MySQL 驱动加载失败：" + e.getMessage());
-        }
-    }
-
+    /** 使用 DBUtil 获取数据库连接 */
     private Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+        return DBUtil.getConnection();
     }
 
     public RoomManMySQL() {
         // 构造时测试连接
-        try (Connection conn = getConnection()) {
+        try (Connection conn = DBUtil.getConnection()) {
             System.out.println(">> MySQL 数据库连接成功");
         } catch (SQLException e) {
             System.out.println("! MySQL 连接失败：" + e.getMessage());
@@ -35,7 +25,7 @@ public class RoomManMySQL implements IRoomMan {
 
     @Override
     public boolean addRoom(Room room) {
-        String sql = "INSERT INTO rooms (room_no, floor, room_status) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO room (room_no, floor, status) VALUES (?, ?, ?)";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, room.getRoomNo());
@@ -54,7 +44,7 @@ public class RoomManMySQL implements IRoomMan {
 
     @Override
     public boolean deleteRoom(String roomNo) {
-        String sql = "DELETE FROM rooms WHERE room_no = ?";
+        String sql = "DELETE FROM room WHERE room_no = ?";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, roomNo);
@@ -72,7 +62,7 @@ public class RoomManMySQL implements IRoomMan {
 
     @Override
     public boolean updateRoom(Room room) {
-        String sql = "UPDATE rooms SET floor = ?, room_status = ? WHERE room_no = ?";
+        String sql = "UPDATE room SET floor = ?, status = ? WHERE room_no = ?";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, room.getFloor());
@@ -92,7 +82,7 @@ public class RoomManMySQL implements IRoomMan {
 
     @Override
     public Room queryRoomByNo(String roomNo) {
-        String sql = "SELECT * FROM rooms WHERE room_no = ?";
+        String sql = "SELECT * FROM room WHERE room_no = ?";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, roomNo);
@@ -110,7 +100,7 @@ public class RoomManMySQL implements IRoomMan {
     @Override
     public List<Room> queryAllRooms() {
         List<Room> list = new ArrayList<>();
-        String sql = "SELECT * FROM rooms ORDER BY room_no";
+        String sql = "SELECT * FROM room ORDER BY room_no";
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -128,14 +118,14 @@ public class RoomManMySQL implements IRoomMan {
         // MySQL 方式下，保存到文件相当于导出到 SQL 脚本
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM rooms ORDER BY room_no");
-             PrintWriter pw = new PrintWriter(new FileWriter("rooms_mysql.txt"))) {
+             ResultSet rs = stmt.executeQuery("SELECT * FROM room ORDER BY room_no");
+             PrintWriter pw = new PrintWriter(new FileWriter("rooms.txt"))) {
             while (rs.next()) {
                 pw.println(rs.getString("room_no") + "-"
                          + rs.getInt("floor") + "-"
-                         + rs.getInt("room_status"));
+                         + rs.getInt("status"));
             }
-            System.out.println(" 数据已导出到 rooms_mysql.txt");
+            System.out.println(" 数据已导出到 rooms.txt");
         } catch (SQLException | IOException e) {
             System.out.println(" 导出失败：" + e.getMessage());
         }
@@ -143,18 +133,18 @@ public class RoomManMySQL implements IRoomMan {
 
     @Override
     public void roomsFromFile() {
-        File file = new File("rooms_mysql.txt");
+        File file = new File("rooms.txt");
         if (!file.exists()) {
             System.out.println("! 数据文件不存在，跳过读取");
             return;
         }
-        String sql = "INSERT IGNORE INTO rooms (room_no, floor, room_status) VALUES (?, ?, ?)";
+        String sql = "INSERT IGNORE INTO room (room_no, floor, status) VALUES (?, ?, ?)";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              BufferedReader br = new BufferedReader(new FileReader(file))) {
             // 清空原有数据
             try (Statement clear = conn.createStatement()) {
-                clear.executeUpdate("TRUNCATE TABLE rooms");
+                clear.executeUpdate("TRUNCATE TABLE room");
             }
             String line;
             int count = 0;
@@ -168,15 +158,15 @@ public class RoomManMySQL implements IRoomMan {
                     count++;
                 }
             }
-            System.out.println(" 已从 rooms_mysql.txt 导入 " + count + " 条数据");
+            System.out.println(" 已从 rooms.txt 导入 " + count + " 条数据");
         } catch (SQLException | IOException e) {
             System.out.println(" 导入失败：" + e.getMessage());
         }
     }
 
     private Room resultSetToRoom(ResultSet rs) throws SQLException {
-        Room room = new Room(rs.getString("room_no"), rs.getInt("floor"), rs.getInt("room_status"));
-        room.setRoomId(rs.getInt("room_id"));
+        Room room = new Room(rs.getString("room_no"), rs.getInt("floor"), rs.getInt("status"));
+        room.setRoomId(rs.getInt("id"));
         return room;
     }
 }
