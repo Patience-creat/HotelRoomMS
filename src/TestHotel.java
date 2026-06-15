@@ -98,7 +98,7 @@ public class TestHotel {
                     System.out.print("输入房号：");
                     String qNo = sc.nextLine();
                     Room r = roomService.getRoomByNo(qNo);
-                    System.out.println(r == null ? "❌ 无此房间" : r);
+                    System.out.println(r == null ? " 无此房间" : r);
                     break;
 
                 case 5:
@@ -127,7 +127,7 @@ public class TestHotel {
                     return;
 
                 default:
-                    System.out.println("❌ 输入错误，请重新选择！");
+                    System.out.println(" 输入错误，请重新选择！");
             }
         }
     }

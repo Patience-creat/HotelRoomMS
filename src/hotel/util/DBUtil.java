@@ -77,7 +77,7 @@ public class DBUtil {
         System.out.println("===== 测试数据库连接 =====");
 
         try (Connection conn = getConnection()) {
-            System.out.println("✅ 数据库连接成功！");
+            System.out.println(" 数据库连接成功！");
             try (Statement stmt = conn.createStatement();
                  ResultSet rs = stmt.executeQuery("SELECT VERSION()")) {
                 if (rs.next()) {
@@ -85,7 +85,7 @@ public class DBUtil {
                 }
             }
         } catch (SQLException e) {
-            System.err.println("❌ 连接失败：" + e.getMessage());
+            System.err.println(" 连接失败：" + e.getMessage());
             System.err.println("请检查：");
             System.err.println("  1. MySQL 服务是否已启动");
             System.err.println("  2. 数据库地址/用户名/密码是否正确");

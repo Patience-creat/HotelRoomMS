@@ -12,7 +12,7 @@ public class RoomManList implements IRoomMan {
         // 构造器可以预加载一些房间数据
         roomList.add(new Room("101", 1, 0));
         roomList.add(new Room("102", 1, 1));
-        roomList.add(new Room("201", 2, 0));
+        roomList.add(new Room("401", 2, 0));
     }
 
     @Override

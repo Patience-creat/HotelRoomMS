@@ -14,7 +14,7 @@ public class RoomManMap implements IRoomMan {
         // 构造器预加载一些房间数据
         roomMap.put("101", new Room("101", 1, 0));
         roomMap.put("102", new Room("102", 1, 1));
-        roomMap.put("201", new Room("201", 2, 0));
+        roomMap.put("201", new Room("301", 2, 0));
     }
 
     @Override
