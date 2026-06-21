@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * 酒店客房管理系统 Swing 图形界面
  */
-public class HotelRoomSwing extends JFrame implements ActionListener {
+public class HotelRoomswing extends JFrame implements ActionListener {
     // 业务层
     private RoomService roomService;
 
@@ -35,7 +35,7 @@ public class HotelRoomSwing extends JFrame implements ActionListener {
     // 底部文本域 - 展示数据/日志
     private JTextArea taContent;
 
-    public HotelRoomSwing() {
+    public HotelRoomswing() {
         // 1. 窗口基础设置
         setTitle("酒店客房管理系统（Swing版）");
         setSize(800, 600);
@@ -44,7 +44,7 @@ public class HotelRoomSwing extends JFrame implements ActionListener {
             @Override
             public void windowClosing(WindowEvent e) {
                 int result = JOptionPane.showConfirmDialog(
-                        HotelRoomSwing.this,
+                        HotelRoomswing.this,
                         "确定要退出酒店客房管理系统吗？",
                         "退出确认",
                         JOptionPane.YES_NO_OPTION,
@@ -291,13 +291,28 @@ public class HotelRoomSwing extends JFrame implements ActionListener {
         // 7. 保存到文件
         else if (source == btnSaveFile) {
             roomService.saveToFile();
-            appendLog("✅ 数据已保存到文件");
+            appendLog("✅ 数据已保存到 rooms.txt");
         }
 
         // 8. 从文件读取
         else if (source == btnLoadFile) {
-            roomService.loadFromFile();
-            appendLog("✅ 已从文件加载数据");
+            java.io.File file = new java.io.File("rooms.txt");
+            if (!file.exists()) {
+                appendLog("❌ 文件 rooms.txt 不存在，请先保存数据！");
+            } else {
+                roomService.loadFromFile();
+                appendLog("✅ 已从 rooms.txt 加载数据");
+                // 加载后自动显示全部房间
+                List<Room> roomList = roomService.getAllRooms();
+                appendLog("-------- 当前房间列表 --------");
+                if (roomList.isEmpty()) {
+                    appendLog("暂无房间数据");
+                } else {
+                    for (Room r : roomList) {
+                        appendLog(r.toString());
+                    }
+                }
+            }
         }
     }
 
@@ -305,7 +320,7 @@ public class HotelRoomSwing extends JFrame implements ActionListener {
     public static void main(String[] args) {
         // Swing 建议在事件线程中启动
         SwingUtilities.invokeLater(() -> {
-            new HotelRoomSwing().setVisible(true);
+            new HotelRoomswing().setVisible(true);
         });
     }
 }
