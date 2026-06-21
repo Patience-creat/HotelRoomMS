@@ -212,9 +212,13 @@ public class HotelRoomSwing extends JFrame implements ActionListener {
                     return;
                 }
                 Room room = new Room(roomNo, floor, status);
-                roomService.addRoom(room);
-                appendLog("✅ 房间【" + roomNo + "】添加成功");
-                clearInput();
+                boolean ok = roomService.addRoom(room);
+                if (ok) {
+                    appendLog("✅ 房间【" + roomNo + "】添加成功");
+                    clearInput();
+                } else {
+                    appendLog("❌ 添加失败：房间【" + roomNo + "】已存在！");
+                }
             } catch (NumberFormatException ex) {
                 appendLog("❌ 楼层、状态必须为数字！");
             }
@@ -226,9 +230,13 @@ public class HotelRoomSwing extends JFrame implements ActionListener {
                 appendLog("❌ 请输入要删除的房号！");
                 return;
             }
-            roomService.deleteRoom(roomNo);
-            appendLog("✅ 房间【" + roomNo + "】删除操作执行完成");
-            clearInput();
+            boolean deleted = roomService.deleteRoom(roomNo);
+            if (deleted) {
+                appendLog("✅ 房间【" + roomNo + "】删除成功");
+                clearInput();
+            } else {
+                appendLog("❌ 删除失败：房间【" + roomNo + "】不存在！");
+            }
         }
 
         // 4. 修改房间
@@ -241,9 +249,13 @@ public class HotelRoomSwing extends JFrame implements ActionListener {
                     return;
                 }
                 Room room = new Room(roomNo, floor, status);
-                roomService.updateRoom(room);
-                appendLog("✅ 房间【" + roomNo + "】修改完成");
-                clearInput();
+                boolean updated = roomService.updateRoom(room);
+                if (updated) {
+                    appendLog("✅ 房间【" + roomNo + "】修改完成");
+                    clearInput();
+                } else {
+                    appendLog("❌ 修改失败：房间【" + roomNo + "】不存在！");
+                }
             } catch (NumberFormatException ex) {
                 appendLog("❌ 楼层、状态必须为数字！");
             }
